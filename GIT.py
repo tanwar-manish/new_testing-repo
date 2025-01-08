@@ -92,12 +92,19 @@ if "unmerged paths" in merge_status:
     print("Once conflicts are resolved, use: git add <file> to stage and then 'git commit' to finish.")
     exit()
 
-# Step 11: Stage modified files (add all files)
+# Step 11: Stage modified files (add all files excluding those you want to ignore)
+# You can specify the files/folders you want to ignore here
+excluded_files = ['folder_to_ignore', 'file_to_ignore.txt']  # Add your files/folders here
+
+# First stage all changes
 print("Staging modified files...")
 run_command(["git", "add", "."])
 
+# Now remove the files/folders to exclude from staging
+for excluded in excluded_files:
+    run_command(["git", "reset", excluded])  # Unstage the excluded files/folders
+
 # Step 12: Commit the changes with the commit message from Excel
-# Ensure no editor is invoked by directly passing the commit message
 commit_output = run_command(["git", "commit", "-m", commit_message])
 if commit_output:
     print(commit_output)
