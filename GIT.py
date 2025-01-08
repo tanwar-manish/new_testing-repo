@@ -68,27 +68,37 @@ if not os.path.isdir(os.path.join(project_directory, ".git")):
     print("Initializing git repository...")
     run_command(["git", "init"])
 
-# Step 7: Check current status and confirm we're on the correct branch
+# Step 7: Set remote origin (if not already set)
+print("Setting up remote repository...")
+run_command(["git", "remote", "add", "origin", repo_url])
+
+# Step 8: Check current status and confirm we're on the correct branch
 status = run_command(["git", "status"])
 if status:
     print(status)
 
-# Step 8: Stage modified files (add all files)
+# Step 9: Check if the feature branch exists locally, if not, create it
+branch_check = run_command(["git", "branch", "--list", feature_branch])
+if feature_branch not in branch_check:
+    print(f"Feature branch {feature_branch} does not exist locally. Creating it...")
+    run_command(["git", "checkout", "-b", feature_branch])
+
+# Step 10: Stage modified files (add all files)
 print("Staging modified files...")
 run_command(["git", "add", "."])
 
-# Step 9: Commit the changes with the commit message from Excel
+# Step 11: Commit the changes with the commit message from Excel
 commit_output = run_command(["git", "commit", "-m", commit_message])
 if commit_output:
     print(commit_output)
 
-# Step 10: Pull the latest changes from the remote feature branch
+# Step 12: Pull the latest changes from the remote feature branch
 print("Pulling latest changes from remote...")
 pull_output = run_command(["git", "pull", "origin", feature_branch, "--allow-unrelated-histories"])
 if pull_output:
     print(pull_output)
 
-# Step 11: Push the changes to the remote repository
+# Step 13: Push the changes to the remote repository
 print(f"Pushing changes to the {feature_branch} branch...")
 push_output = run_command(["git", "push", "origin", feature_branch])
 if push_output:
