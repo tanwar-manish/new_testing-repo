@@ -1,4 +1,3 @@
-#Also working 
 import os
 import subprocess
 import pandas as pd
@@ -98,6 +97,7 @@ print("Staging modified files...")
 run_command(["git", "add", "."])
 
 # Step 12: Commit the changes with the commit message from Excel
+# Ensure no editor is invoked by directly passing the commit message
 commit_output = run_command(["git", "commit", "-m", commit_message])
 if commit_output:
     print(commit_output)
