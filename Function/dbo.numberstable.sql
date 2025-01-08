@@ -25,7 +25,7 @@ CREATE FUNCTION [dbo].[NumbersTable]
 * -----------  -------------  ---------------  ---------               *  
 * v1.0    ---     ---     Initial version              *  
 * v1.1    Mahesh Mohite  08/09/2022   Changes related to CustomerAssetAPI - Datahub briding development *  
-*                                *  
+* v1.2   Automation  08/01/2025   Automation *                                 *  
 *=========================================================================================================================== *  
 */   
 RETURNS TABLE  
