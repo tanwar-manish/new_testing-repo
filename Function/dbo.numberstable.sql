@@ -5,6 +5,8 @@ BEGIN
     DROP FUNCTION [dbo].[NumbersTable]
 END
 GO
+
+
 CREATE FUNCTION [dbo].[NumbersTable]   
 (  
 @fromNumber int,  
@@ -24,6 +26,8 @@ CREATE FUNCTION [dbo].[NumbersTable]
 * -----------  -------------  ---------------  ---------               *  
 * v1.0    ---     ---     Initial version              *  
 * v1.1    Mahesh Mohite  08/09/2022   Changes related to CustomerAssetAPI - Datahub briding development *  
+* v1.2    Manish  31/12/2024   Automation development *  
+* v1.4    Manish (Automation)  08/01/2025   Automation development *  
 *                                *  
 *=========================================================================================================================== *  
 */   

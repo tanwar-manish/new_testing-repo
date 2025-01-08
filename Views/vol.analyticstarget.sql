@@ -8,6 +8,8 @@ GO
 
 
 
+
+
 CREATE VIEW VOL.AnalyticsTarget AS
 SELECT
 --cast (MTH + ' 01 '  + cast(year(s.FUNDGIN_STAT_DT) as varchar(4)) as date) FundingMonth,

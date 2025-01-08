@@ -15,6 +15,8 @@ GO
 -- 16/02/2023       V1       Manoj                   Initial Version  
 -- 16/02/2023       V1       Manoj                   Added 'UID' logic for Uniqueness
 -- 16/02/2023       V1       Manoj                   Added 'CRC' logic for Increamental
+-- 31/12/2024       V4       Manish 
+-- 8/1/2025       V5       Manish (Automation) 
 -- -----------------------------------------------------------------------------------------------
 CREATE VIEW DatahubPMR.v_CONTRACT_RAW_DETAILS
 AS 
