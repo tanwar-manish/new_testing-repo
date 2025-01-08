@@ -6,7 +6,6 @@ import re
 # Function to execute shell commands and get output
 def run_command(command):
     try:
-        # Run the command without shell=True to avoid issues with command execution
         result = subprocess.run(command, text=True, check=True, capture_output=True)
         return result.stdout
     except subprocess.CalledProcessError as e:
@@ -68,9 +67,11 @@ if not os.path.isdir(os.path.join(project_directory, ".git")):
     print("Initializing git repository...")
     run_command(["git", "init"])
 
-# Step 7: Set remote origin (if not already set)
-print("Setting up remote repository...")
-run_command(["git", "remote", "add", "origin", repo_url])
+# Step 7: Check if remote origin exists and add if it doesn't
+remotes = run_command(["git", "remote", "get-url", "origin"])
+if remotes is None:
+    print("Setting up remote repository...")
+    run_command(["git", "remote", "add", "origin", repo_url])
 
 # Step 8: Check current status and confirm we're on the correct branch
 status = run_command(["git", "status"])
@@ -83,22 +84,30 @@ if feature_branch not in branch_check:
     print(f"Feature branch {feature_branch} does not exist locally. Creating it...")
     run_command(["git", "checkout", "-b", feature_branch])
 
-# Step 10: Stage modified files (add all files)
+# Step 10: Check if there are merge conflicts and resolve them
+merge_status = run_command(["git", "status"])
+if "unmerged paths" in merge_status:
+    print("There are merge conflicts. Please resolve them manually before proceeding.")
+    print("To abort the merge, use: git merge --abort")
+    print("Once conflicts are resolved, use: git add <file> to stage and then 'git commit' to finish.")
+    exit()
+
+# Step 11: Stage modified files (add all files)
 print("Staging modified files...")
 run_command(["git", "add", "."])
 
-# Step 11: Commit the changes with the commit message from Excel
+# Step 12: Commit the changes with the commit message from Excel
 commit_output = run_command(["git", "commit", "-m", commit_message])
 if commit_output:
     print(commit_output)
 
-# Step 12: Pull the latest changes from the remote feature branch
+# Step 13: Pull the latest changes from the remote feature branch
 print("Pulling latest changes from remote...")
 pull_output = run_command(["git", "pull", "origin", feature_branch, "--allow-unrelated-histories"])
 if pull_output:
     print(pull_output)
 
-# Step 13: Push the changes to the remote repository
+# Step 14: Push the changes to the remote repository
 print(f"Pushing changes to the {feature_branch} branch...")
 push_output = run_command(["git", "push", "origin", feature_branch])
 if push_output:
