@@ -22,6 +22,24 @@ def check_git_installed():
         print("Git is not installed or not in the PATH!")
         exit()
 
+# Function to get files to stage (modified or untracked files)
+def get_files_to_add():
+    # Run 'git status' to get the list of modified and untracked files
+    status_output = run_command(["git", "status", "--porcelain"])
+
+    if not status_output:
+        return []
+
+    # List of files to add (modified or untracked files)
+    files_to_add = []
+
+    for line in status_output.splitlines():
+        status, file = line.split(maxsplit=1)
+        if status in ["M", "A"]:  # 'M' for modified, 'A' for added
+            files_to_add.append(file)
+
+    return files_to_add
+
 # Step 1: Set the project directory to the path where the script is located
 project_directory = os.path.dirname(os.path.realpath(__file__))
 excel_file = os.path.join(project_directory, 'Parameter.xlsx')
@@ -84,6 +102,10 @@ if feature_branch not in branch_check:
     print(f"Feature branch {feature_branch} does not exist locally. Creating it...")
     run_command(["git", "checkout", "-b", feature_branch])
 
+# Ensure that the release branch exists locally (fetch if necessary)
+print(f"Ensuring release branch '{release_branch}' exists locally...")
+run_command(["git", "fetch", "origin", release_branch])
+
 # Step 10: Check if there are merge conflicts and resolve them
 merge_status = run_command(["git", "status"])
 if "unmerged paths" in merge_status:
@@ -92,17 +114,14 @@ if "unmerged paths" in merge_status:
     print("Once conflicts are resolved, use: git add <file> to stage and then 'git commit' to finish.")
     exit()
 
-# Step 11: Stage modified files (add all files excluding those you want to ignore)
-# You can specify the files/folders you want to ignore here
-excluded_files = ['folder_to_ignore', 'file_to_ignore.txt']  # Add your files/folders here
-
-# First stage all changes
-print("Staging modified files...")
-run_command(["git", "add", "."])
-
-# Now remove the files/folders to exclude from staging
-for excluded in excluded_files:
-    run_command(["git", "reset", excluded])  # Unstage the excluded files/folders
+# Step 11: Stage modified files, excluding ignored ones
+files_to_add = get_files_to_add()
+if files_to_add:
+    print("Staging modified files...")
+    for file in files_to_add:
+        run_command(["git", "add", file])
+else:
+    print("No files to stage.")
 
 # Step 12: Commit the changes with the commit message from Excel
 commit_output = run_command(["git", "commit", "-m", commit_message])
@@ -121,4 +140,69 @@ push_output = run_command(["git", "push", "origin", feature_branch])
 if push_output:
     print(push_output)
 
-print("Git operations completed successfully!")
+# Function to create a pull request
+def create_pull_request(repo_dir, release_branch, feature_branch):
+    gh_command = "gh"
+    
+    # Check if the provided directory is a Git repository
+    if not os.path.isdir(os.path.join(repo_dir, ".git")):
+        print(f"Error: The directory {repo_dir} is not a Git repository. Please make sure it's initialized.")
+        return
+
+    # Change the working directory to the Git repository
+    os.chdir(repo_dir)
+    
+    # Ensure that the feature branch exists locally
+    feature_branch_check = subprocess.run(
+        ['git', 'branch', '--list', feature_branch], 
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+    )
+    if feature_branch_check.stdout.strip() == '':
+        print(f"Error: The feature branch '{feature_branch}' does not exist in the repository.")
+        return
+
+    # Command to create the pull request
+    command = [
+        gh_command, "pr", "create", 
+        "--base", release_branch, 
+        "--head", feature_branch, 
+        "--title", f"Merge {feature_branch} into {release_branch}",
+        "--body", f"Automated PR to merge feature branch {feature_branch} into release branch {release_branch}."
+    ]
+
+    try:
+        # Run the command to create the pull request
+        result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        print(f"Pull request created successfully from {feature_branch} to {release_branch}.")
+    except subprocess.CalledProcessError as e:
+        # If an error occurs, print details for debugging
+        print(f"Error occurred while creating the pull request: {e}")
+        print(f"Standard Output: {e.stdout}")
+        print(f"Standard Error: {e.stderr}")
+
+# Step 15: Call the create_pull_request function
+create_pull_request(project_directory, release_branch, feature_branch)
+
+# Step 16: Ask the developer if they want to merge the feature branch into the release branch
+merge_response = input(f"Do you want to merge the feature branch '{feature_branch}' into the release branch '{release_branch}'? (Y/N): ").strip().lower()
+
+# Step 17: Handle merge action based on user input
+if merge_response == 'y':
+    print(f"Merging feature branch {feature_branch} into {release_branch}...")
+    
+    # Checkout the release branch
+    run_command(["git", "checkout", release_branch])
+    
+    # Merge the feature branch into the release branch
+    run_command(["git", "merge", feature_branch])
+    print(f"Feature branch {feature_branch} merged into {release_branch} successfully.")
+
+    # Push the merged changes to the remote
+    print(f"Pushing the merged changes to the remote repository...")
+    run_command(["git", "push", "origin", release_branch])
+    print("Merged changes pushed to the remote repository.")
+
+elif merge_response == 'n':
+    print(f"Merge action aborted. Feature branch '{feature_branch}' was not merged into release branch '{release_branch}'.")
+else:
+    print("Invalid input. Merge action skipped.")
