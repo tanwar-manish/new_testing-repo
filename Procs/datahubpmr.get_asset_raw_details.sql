@@ -31,7 +31,8 @@ EXEC DatahubPMR.GET_ASSET_RAW_DETAILS
 -- 17/07/2024  V8       Veeran                  Removed the batch logic and added few indexes to improve the performance.  
 -- 28/08/2024  V9       Veeran                  Added Few aditional logic to populate Dervied Gen tables and Batch Process  
 -- 8/01/2025  V10       Automation                  Added Few aditional logic to populate Dervied Gen tables and Batch Process  
--- 8/01/2025  V11.0       Automation testing by Manish    
+-- 8/01/2025  V11.0       Automation testing by Manish  
+-- 9/01/2025  V12.0       Automation testing by Manish   
 -- ------------------------------------------------------------------------------------------------------    
 -- =============================================    
 BEGIN      
