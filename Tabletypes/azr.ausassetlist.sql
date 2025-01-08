@@ -1,7 +1,5 @@
 /*DBTYPE:SQLSERVER|TARGETDB:HPFSIDS*/
 
-
-
 IF NOT EXISTS (SELECT * FROM sys.types st JOIN sys.schemas ss ON st.schema_id = ss.schema_id WHERE st.name = N'[AUSAssetList]' AND ss.name = N'[AZR]')
 BEGIN
 

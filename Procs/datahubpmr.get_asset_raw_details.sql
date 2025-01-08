@@ -29,10 +29,9 @@ EXEC DatahubPMR.GET_ASSET_RAW_DETAILS
 -- 21/02/2024       V6       Manoj                   Fetch vendor company name and vendor company id for migrated contracts from DW Database.    
 -- 21/02/2024       V7       Manoj                   Change in net_book_value logic now Net Book Value should be displayed regardless of status.    
 -- 17/07/2024  V8       Veeran                  Removed the batch logic and added few indexes to improve the performance.  
--- 28/08/2024  V9       Veeran                  Added Few aditional logic to populate Dervied Gen tables and Batch Process  
--- 8/01/2025  V10       Automation                  Added Few aditional logic to populate Dervied Gen tables and Batch Process  
--- 8/01/2025  V11.0       Automation testing by Manish  
--- 9/01/2025  V12.0       Automation testing by Manish   
+-- 8/01/2025  V11       Automation 
+-- 9/01/2025  V12       Automation Testing
+-- 8/01/2025  V11       Automation                  Added Few aditional logic to populate Dervied Gen tables and Batch Process  
 -- ------------------------------------------------------------------------------------------------------    
 -- =============================================    
 BEGIN      
